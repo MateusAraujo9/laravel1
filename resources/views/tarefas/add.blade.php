@@ -6,10 +6,9 @@
     <h1>Adição</h1>
 
     @if (session('warning'))
-        @alert
-            @slot('type') Erro: @endslot
+        <x-alert>
             {{session('warning')}}
-        @endalert
+        </x-alert>
     @endif
 
     <form method="POST">
