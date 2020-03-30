@@ -25,19 +25,30 @@ class TarefasController extends Controller
 
     public function addAction(Request $request)
     {
-        if($request->filled('titulo')){
-            $titulo = $request->input('titulo');
+        $request->validate([
+            'titulo' => ['required', 'string'],
+            'responsavel' => ['required', 'string'],
+            'cpf' => ['required', 'string', 'size:11'],
+            'email' => ['required', 'e-mail']
+        ]);
 
-            DB::insert("insert into tarefas (titulo) values (:titulo)", ['titulo' => $titulo]);
+        $titulo = $request->input('titulo');
+        $responsavel = $request->input('responsavel');
+        $cpf = $request->input('cpf');
+        $email = $request->input('email');
 
-            $url = route('tarefas.index');
+        DB::insert("insert into tarefas (titulo, responsavel, cpf, email) values (:titulo, :responsavel, :cpf, :email)", [
+            'titulo' => $titulo,
+            'responsavel' => $responsavel,
+            'cpf' => $cpf,
+            'email' => $email
+            ]);
 
-            //maneiras de fazer redirect
-            // return redirect()->route('tarefas.index');
-            return redirect($url);
-        }else{
-            return redirect()->route('tarefas.add')->with('warning', 'Você não preencheu o titulo');
-        }
+        $url = route('tarefas.index');
+
+        //maneiras de fazer redirect
+        // return redirect()->route('tarefas.index');
+        return redirect($url);
     }
 
     public function edit($id)
@@ -57,16 +68,32 @@ class TarefasController extends Controller
 
     public function editAction(Request $request, $id)
     {
-        if($request->filled('titulo')){
-            DB::update("UPDATE tarefas SET titulo = :titulo WHERE id = :id", [
-                'titulo' => $request->input('titulo'),
-                'id' => $id
-            ]);
-            
-            return redirect()->route('tarefas.index');
-        }else{
-            return redirect()->route('tarefas.edit', ['id' => $id])->with('warning', 'Você não preencheu o titulo');
-        }
+        $request->validate([
+            'titulo' => ['required', 'string'],
+            'responsavel' => ['required', 'string'],
+            'cpf' => ['required', 'string', 'size:11'],
+            'email' => ['required', 'e-mail']
+        ]);
+
+        $titulo = $request->input('titulo');
+        $responsavel = $request->input('responsavel');
+        $cpf = $request->input('cpf');
+        $email = $request->input('email');
+
+        DB::update("UPDATE tarefas SET 
+                    titulo = :titulo,
+                    responsavel = :responsavel,
+                    cpf = :cpf,
+                    email = :email
+                    WHERE id = :id", [
+            'titulo' => $titulo,
+            'responsavel' => $responsavel,
+            'cpf' => $cpf,
+            'email' => $email,
+            'id' => $id
+        ]);
+        
+        return redirect()->route('tarefas.index');
     }
 
     public function delete($id)

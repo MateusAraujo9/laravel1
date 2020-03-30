@@ -9,6 +9,7 @@
 <body>
     <header>
         <h1>Header</h1>
+    <a href="{{ route('tarefas.index') }}">[ HOME ]</a>
     </header>
     <hr>
     <section>

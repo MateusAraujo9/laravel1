@@ -1,4 +1,4 @@
-<div style="border: 1px solid red; padding: 20px;">
-    {{$slot}}
-</div>
 <br>
+<span style="color: red;">
+    {{$slot}}
+</span>
