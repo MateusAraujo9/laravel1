@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Tarefa;
 
 class TarefasController extends Controller
 {
     public function index()
     {
-        $list = DB::select("SELECT * FROM tarefas");
+        $list = Tarefa::all();
 
         $retorno = [
             'list' => $list
@@ -32,38 +33,33 @@ class TarefasController extends Controller
             'email' => ['required', 'e-mail']
         ]);
 
-        $titulo = $request->input('titulo');
-        $responsavel = $request->input('responsavel');
-        $cpf = $request->input('cpf');
-        $email = $request->input('email');
+        $tarefa = new Tarefa;
+        $tarefa->titulo = $$request->input('titulo');;
+        $tarefa->responsavel = $$request->input('responsavel');
+        $tarefa->cpf = $$request->input('cpf');
+        $tarefa->email = $$request->input('email');
+        $tarefa->save();
 
-        DB::insert("insert into tarefas (titulo, responsavel, cpf, email) values (:titulo, :responsavel, :cpf, :email)", [
-            'titulo' => $titulo,
-            'responsavel' => $responsavel,
-            'cpf' => $cpf,
-            'email' => $email
-            ]);
-
-        $url = route('tarefas.index');
+       
 
         //maneiras de fazer redirect
-        // return redirect()->route('tarefas.index');
-        return redirect($url);
+        //1
+        return redirect()->route('tarefas.index');
+
+        //2
+        // $url = route('tarefas.index');
+        // return redirect($url);
     }
 
     public function edit($id)
     {
-        $data = DB::select("SELECT * FROM tarefas WHERE id = :id", [
-            'id' => $id
-        ]);
+        $data = Tarefa::find($id);
 
-        if (count($data) > 0) {
-            return view('tarefas.edit', ['data' => $data[0]]);    
+        if ($data) {
+            return view('tarefas.edit', ['data' => $data]);    
         }else{
             return redirect()->route('tarefas.index');
         }
-
-        
     }
 
     public function editAction(Request $request, $id)
@@ -75,39 +71,29 @@ class TarefasController extends Controller
             'email' => ['required', 'e-mail']
         ]);
 
-        $titulo = $request->input('titulo');
-        $responsavel = $request->input('responsavel');
-        $cpf = $request->input('cpf');
-        $email = $request->input('email');
-
-        DB::update("UPDATE tarefas SET 
-                    titulo = :titulo,
-                    responsavel = :responsavel,
-                    cpf = :cpf,
-                    email = :email
-                    WHERE id = :id", [
-            'titulo' => $titulo,
-            'responsavel' => $responsavel,
-            'cpf' => $cpf,
-            'email' => $email,
-            'id' => $id
-        ]);
+        $tarefa = Tarefa::find($id);        
+        $tarefa->titulo = $request->input('titulo');
+        $tarefa->responsavel = $request->input('responsavel');
+        $tarefa->cpf = $request->input('cpf');
+        $tarefa->email = $request->input('email');
+        $tarefa->save();
         
         return redirect()->route('tarefas.index');
     }
 
     public function delete($id)
     {
-        DB::delete("DELETE FROM tarefas WHERE id = :id", ['id' => $id]);
-
+        Tarefa::find($id)->delete();
         return redirect()->route('tarefas.index');
     }
 
     public function marcar($id)
     {
-        DB::update("UPDATE tarefas SET resolvido = 1 - resolvido where id = :id", [
-            'id' => $id
-        ]);
+        $t = Tarefa::find($id);
+        if($t){
+            $t->resolvido = 1 - $t->resolvido;
+            $t->save();
+        }
 
         return redirect()->route('tarefas.index');
     }
